@@ -123,6 +123,15 @@ def generate_peer_assignments(input_file):
     peer_df = pd.DataFrame(peer_assignments)
     return peer_df
 
+# Count how many times each faculty is assigned as a Peer Faculty
+    peer_counts = peer_df['Peer Faculty'].value_counts()
+
+# Identify faculty assigned exactly twice
+    assigned_twice = peer_counts[peer_counts == 2].index.tolist()
+
+# Add a new column in peer_df
+    peer_df["Assigned Twice in Week"] = peer_df["Peer Faculty"].apply(
+        lambda x: "Yes" if x in assigned_twice else "No")
 
 # -----------------------------------
 # Function to generate summary (for free faculty tab)
@@ -216,6 +225,8 @@ def main():
         free_faculty_grouped["Time Slot"] = free_faculty_grouped["Time Slot"].apply(lambda x: ", ".join(x))
 
         st.dataframe(free_faculty_grouped)
+        st.dataframe(filtered_df[ ["Day", "Time Slot", "Busy Faculty", "Class", "Peer Faculty", "Alternative Faculty", "Assigned Twice in Week"]])
+
 
 if __name__ == "__main__":
     main()
