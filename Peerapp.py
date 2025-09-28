@@ -2,6 +2,7 @@ import pandas as pd
 import random
 import streamlit as st
 import logging
+from PIL import Image
 
 # Suppress Streamlit warnings
 logging.getLogger("streamlit").setLevel(logging.ERROR)
@@ -162,6 +163,8 @@ def generate_summary_from_excel(input_file):
 # -----------------------------------
 def main():
     st.set_page_config(page_title="Peer Assignment Dashboard", layout="wide")
+    logo = Image.open("logo.png")
+    st.image(logo, width=200) 
     st.title("🧑‍🏫 Faculty Peer Assignment Dashboard")
 
     excel_file = "Peercopy.xlsx"
