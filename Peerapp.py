@@ -132,16 +132,11 @@ def main():
     st.title("🧑‍🏫 Faculty Peer Assignment Dashboard")
 
     # Fixed Excel file path (no upload)
-    excel_file = "Peercopy.xlsx"
+    excel_file = "/Users/chandu/PycharmProjects/Peer_faculty/Peercopy.xlsx"
     peer_df = generate_peer_assignments(excel_file)
 
-    # Sidebar filters
+    # Sidebar filters for Faculty and Class
     st.sidebar.header("Filters")
-    day_filter = st.sidebar.multiselect(
-        "Select Day(s)",
-        options=peer_df["Day"].unique(),
-        default=peer_df["Day"].unique()
-    )
     faculty_filter = st.sidebar.multiselect(
         "Select Faculty",
         options=peer_df["Peer Faculty"].unique(),
@@ -153,18 +148,27 @@ def main():
         default=peer_df["Class"].unique()
     )
 
-    # Apply filters
-    filtered_df = peer_df[
-        (peer_df["Day"].isin(day_filter)) &
-        (peer_df["Peer Faculty"].isin(faculty_filter)) &
-        (peer_df["Class"].isin(class_filter))
-    ]
+    # Day Tabs
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    tabs = st.tabs(days)
 
-    # Display results
-    st.subheader("📋 Detailed Peer Assignments")
-    st.dataframe(filtered_df[
-        ["Day", "Time Slot", "Busy Faculty", "Class", "Peer Faculty", "Alternative Faculty"]
-    ])
+    for i, day in enumerate(days):
+        with tabs[i]:
+            st.subheader(f"📋 Peer Assignments for {day}")
+
+            # Filter for the specific day, faculty, and class
+            filtered_df = peer_df[
+                (peer_df["Day"] == day) &
+                (peer_df["Peer Faculty"].isin(faculty_filter)) &
+                (peer_df["Class"].isin(class_filter))
+            ]
+
+            if filtered_df.empty:
+                st.info("No assignments found for the selected filters.")
+            else:
+                st.dataframe(filtered_df[
+                    ["Day", "Time Slot", "Busy Faculty", "Class", "Peer Faculty", "Alternative Faculty"]
+                ])
 
 if __name__ == "__main__":
     main()
