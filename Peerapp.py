@@ -102,8 +102,8 @@ def generate_peer_assignments(input_file):
             "Class": "No Class",
             "Peer Faculty": "None",
             "Alternative Faculty": "None"
-        })
-           continue
+            })
+            continue
         
         #chosen_class = busy_classes.sample(1).iloc[0]
         available = [f for f in free_faculty_list if f not in assigned_faculty]
