@@ -78,9 +78,9 @@ def generate_peer_assignments(input_file):
         EXCLUDE_FACULTY = [
             "Prof. P. Bharani Chandra Kumar",
             "Dr. K. Sri Chandan",
-            "Sri B. Durga Prasad"
-            "Dr M Ramu"
-            "Dr. M Ramesh"
+            "Sri B. Durga Prasad",
+            "Dr M Ramu",
+            "Dr. M Ramesh",
             "Dr V Raja Kumar"
         ]
 
@@ -122,6 +122,7 @@ def generate_peer_assignments(input_file):
 
     peer_df = pd.DataFrame(peer_assignments)
     return peer_df
+
 
 # -----------------------------------
 # Function to generate summary (for free faculty tab)
@@ -184,9 +185,9 @@ def main():
         default=peer_df["Class"].unique()
     )
 
-    # Tabs for days + free faculty
+    # Tabs for days + free faculty + peer summary
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    tabs = st.tabs(days + ["Faculty Free Slots"])
+    tabs = st.tabs(days + ["Faculty Free Slots", "Peer Faculty Summary"])
 
     # Peer assignments per day
     for i, day in enumerate(days):
@@ -207,7 +208,7 @@ def main():
                 ])
 
     # Faculty Free Slots tab
-    with tabs[-1]:
+    with tabs[-2]:
         st.subheader("🟢 Faculty Free Slots Each Day")
 
         free_faculty_list = summary[summary["Status"] == "Free"]
@@ -215,6 +216,18 @@ def main():
         free_faculty_grouped["Time Slot"] = free_faculty_grouped["Time Slot"].apply(lambda x: ", ".join(x))
 
         st.dataframe(free_faculty_grouped)
-    
+
+    # Peer Faculty Summary tab
+    with tabs[-1]:
+        st.subheader("📌 Peer Faculty Assignments (Mon-Fri)")
+
+        peer_summary = peer_df.groupby(["Peer Faculty", "Day"])["Class"].apply(list).reset_index()
+        peer_summary["Class"] = peer_summary["Class"].apply(lambda x: ", ".join(x))
+
+        # Pivot to get a table where columns are days
+        peer_summary_pivot = peer_summary.pivot(index="Peer Faculty", columns="Day", values="Class").fillna("No Assignment")
+        st.dataframe(peer_summary_pivot)
+
+
 if __name__ == "__main__":
     main()
