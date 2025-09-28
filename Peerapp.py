@@ -81,41 +81,42 @@ def generate_peer_assignments(input_file):
 
     for (day, slot), group in summary.groupby(["Day", "Time Slot"]):
         busy_classes = group[group["Status"] == "Busy"]
-        free_faculty = group[group["Status"] == "Free"]["Faculty Name"].unique().tolist()
-
-        # Filter only faculty free before AND after
-        free_faculty = [f for f in free_faculty if is_available_before_after(f, day, slot)]
-
-        if busy_classes.empty or len(free_faculty) == 0:
-            peer_assignments.append({
-                "Day": day,
-                "Time Slot": slot,
-                "Busy Faculty": "None",
-                "Class": "No Class",
-                "Peer Faculty": "None",
-                "Alternative Faculty": "None"
-            })
-            continue
         
         EXCLUDE_FACULTY = [
             "Prof. P. Bharani Chandra Kumar"
             "Dr. K. Srichandan"
             "Sri B. Durga Prasad"
         ]
-        chosen_class = busy_classes.sample(1).iloc[0]
+        
+        free_faculty_list = [f for f in group[group["Status"] == "Free"]["Faculty Name"].unique().tolist() if f not in EXCLUDE_FACULTY]
+        
+        # Filter only faculty free before AND after
+        free_faculty_list = [f for f in free_faculty_list if is_available_before_after(f, day, slot)]
 
-        available = [f for f in free_faculty if f not in assigned_faculty and f not in EXCLUDE_FACULTY]
+        if not free_faculty_list:
+            # No available faculty, assign none
+            peer_assignments.append({
+            "Day": day,
+            "Time Slot": slot,
+            "Busy Faculty": "None",
+            "Class": "No Class",
+            "Peer Faculty": "None",
+            "Alternative Faculty": "None"
+        })
+    continue
+        
+        chosen_class = busy_classes.sample(1).iloc[0]
+        available = [f for f in free_faculty_list if f not in assigned_faculty]
         if not available:
             assigned_faculty.clear()
-            available = free_faculty
+            available = free_faculty_list
 
         peer = random.choice(available)
         assigned_faculty.add(peer)
 
         # Pick 3 randomized alternatives
-        alt_faculty = [f for f in free_faculty if f != peer and f not in EXCLUDE_FACULTY]
+        alt_faculty = [f for f in free_faculty_list if f != peer]
         random.shuffle(alt_faculty)
-        # available = [f for f in free_faculty if f not in assigned_faculty and f not in EXCLUDE_FACULTY]
         alt_faculty = alt_faculty[:3]
 
         peer_assignments.append({
