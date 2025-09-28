@@ -99,7 +99,7 @@ def generate_peer_assignments(input_file):
 
         chosen_class = busy_classes.sample(1).iloc[0]
 
-        available = [f for f in free_faculty if f not in assigned_faculty and f != "Prof. P. Bharani Chandra Kumar"]
+        available = [f for f in free_faculty if f not in assigned_faculty and f != "Prof. P. Bharani Chandra Kumar","Dr. K. Srichandan"]
         if not available:
             assigned_faculty.clear()
             available = free_faculty
@@ -108,7 +108,7 @@ def generate_peer_assignments(input_file):
         assigned_faculty.add(peer)
 
         # Pick 3 randomized alternatives
-        alt_faculty = [f for f in free_faculty if f != peer and f != "Prof. P. Bharani Chandra Kumar"]
+        alt_faculty = [f for f in free_faculty if f != peer and f != "Prof. P. Bharani Chandra Kumar","Dr. K. Srichandan"]
         random.shuffle(alt_faculty)
         alt_faculty = alt_faculty[:3]
 
