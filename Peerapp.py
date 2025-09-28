@@ -163,7 +163,7 @@ def generate_summary_from_excel(input_file):
 # -----------------------------------
 def main():
     st.set_page_config(page_title="Peer Assignment Dashboard", layout="wide")
-    logo = Image.open("logo.png")
+    logo = Image.open("gitm.png")
     st.image(logo, width=200) 
     st.title("🧑‍🏫 Faculty Peer Assignment Dashboard")
 
