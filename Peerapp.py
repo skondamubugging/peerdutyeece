@@ -219,8 +219,8 @@ def main():
 
     # Faculty on Peer Duty tab
     with tabs[6]:
-    st.subheader("🧑‍🏫 Faculty Assigned as Peer")
-    
+        st.subheader("🧑‍🏫 Faculty Assigned as Peer")
+        
     # Group by Peer Faculty
     peer_duty_df = peer_df.groupby("Peer Faculty").apply(
         lambda x: pd.DataFrame({
