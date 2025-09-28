@@ -218,10 +218,10 @@ def main():
         st.dataframe(free_faculty_grouped)
 
     # Faculty on Peer Duty tab
-    with tabs.append(st.tab("Faculty on Peer Duty")):  # Add the new tab
-        st.subheader("🧑‍🏫 Faculty Assigned as Peer")
-
-    # Group by Peer Faculty and show which classes/days they are covering
+    with tabs[6]:
+    st.subheader("🧑‍🏫 Faculty Assigned as Peer")
+    
+    # Group by Peer Faculty
     peer_duty_df = peer_df.groupby("Peer Faculty").apply(
         lambda x: pd.DataFrame({
             "Day": x["Day"],
@@ -231,7 +231,7 @@ def main():
             "Alternative Faculty": x["Alternative Faculty"]
         })
     ).reset_index(level=1, drop=True).reset_index().rename(columns={"Peer Faculty": "Faculty Name"})
-
+    
     st.dataframe(peer_duty_df)
 
 if __name__ == "__main__":
