@@ -84,8 +84,7 @@ def generate_peer_assignments(input_file):
             "Dr V Raja Kumar"
         ]
 
-        free_faculty_list = [f for f in group[group["Status"] == "Free"]["Faculty Name"].unique().tolist()
-                             if f not in EXCLUDE_FACULTY]
+        free_faculty_list = [f for f in group[group["Status"] == "Free"]["Faculty Name"].unique().tolist() if f not in EXCLUDE_FACULTY]
         free_faculty_list = [f for f in free_faculty_list if is_available_before_after(f, day, slot)]
 
         if not free_faculty_list:
