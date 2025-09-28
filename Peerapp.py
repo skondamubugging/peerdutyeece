@@ -187,7 +187,7 @@ def main():
 
     # Tabs for days + free faculty
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    tabs = st.tabs(days + ["Faculty Free Slots", "Faculty on Peer Duty"])
+    tabs = st.tabs(days + ["Faculty Free Slots"])
 
     # Peer assignments per day
     for i, day in enumerate(days):
