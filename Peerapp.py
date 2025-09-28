@@ -132,7 +132,7 @@ def main():
     st.title("🧑‍🏫 Faculty Peer Assignment Dashboard")
 
     # Fixed Excel file path (no upload)
-    excel_file = "/Users/chandu/PycharmProjects/Peer_faculty/Peercopy.xlsx"
+    excel_file = "Peercopy.xlsx"
     peer_df = generate_peer_assignments(excel_file)
 
     # Sidebar filters for Faculty and Class
