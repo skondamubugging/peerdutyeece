@@ -160,21 +160,6 @@ def generate_summary_from_excel(input_file):
     summary = summary[["Day", "Time Slot", "Faculty Name", "Designation", "Emp ID", "Status", "Assigned Work"]]
     return summary
 
-    assignments_per_day = peer_df.groupby("Day")["Peer Faculty"].count().reset_index()
-    assignments_per_day = assignments_per_day.rename(columns={"Peer Faculty": "Total Peer Assignments"})
-    st.bar_chart(assignments_per_day.set_index("Day"))
-
-    if not peer_df.empty:
-        classes_per_faculty = peer_df.groupby("Peer Faculty")["Class"].count().reset_index()
-        classes_per_faculty = classes_per_faculty.rename(columns={"Class": "Total Classes Assigned"})
-        st.dataframe(classes_per_faculty)
-    else:
-        st.info("No peer assignments found to calculate statistics.")
-
-    peer_counts = peer_df["Peer Faculty"].value_counts()
-    st.write("### Peer Assignment Distribution")
-    st.bar_chart(peer_counts)
-
 # -----------------------------------
 # Streamlit Dashboard
 # -----------------------------------
@@ -232,17 +217,6 @@ def main():
         free_faculty_grouped["Time Slot"] = free_faculty_grouped["Time Slot"].apply(lambda x: ", ".join(x))
 
         st.dataframe(free_faculty_grouped)
-
-    st.subheader("📊 Peer Assignment Statistics")
-    st.write("### Total Classes Assigned per Faculty")
-    st.dataframe(classes_per_faculty)
-
-    st.write("### Total Peer Assignments per Day")
-    st.bar_chart(assignments_per_day.set_index("Day"))
-
-    st.write("### Faculty with Maximum Free Slots")
-    st.dataframe(free_slots_per_faculty)
-    
 
 if __name__ == "__main__":
     main()
