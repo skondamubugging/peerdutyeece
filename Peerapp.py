@@ -165,7 +165,7 @@ def main():
     st.set_page_config(page_title="Peer Assignment Dashboard", layout="wide")
     logo = Image.open("gitm.png")
     st.image(logo, width=200) 
-    st.title("🧑‍🏫 Faculty Peer Assignment Dashboard")
+    st.title("Department of EECE - Faculty Peer Assignment Dashboard")
 
     excel_file = "Peercopy.xlsx"
     peer_df = generate_peer_assignments(excel_file)
