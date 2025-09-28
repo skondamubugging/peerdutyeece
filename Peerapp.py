@@ -113,7 +113,7 @@ def generate_peer_assignments(input_file):
         assigned_faculty.add(peer)
 
         # Pick 3 randomized alternatives
-        alt_faculty = [f for f in free_faculty if f != peer and f != EXCLUDE_FACULTY]
+        alt_faculty = [f for f in free_faculty if f != peer and f not in EXCLUDE_FACULTY]
         random.shuffle(alt_faculty)
         # available = [f for f in free_faculty if f not in assigned_faculty and f not in EXCLUDE_FACULTY]
         alt_faculty = alt_faculty[:3]
