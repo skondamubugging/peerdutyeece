@@ -2,6 +2,7 @@ import pandas as pd
 import random
 import streamlit as st
 import logging
+import os
 from PIL import Image
 
 # Suppress Streamlit warnings
@@ -87,7 +88,7 @@ def generate_peer_assignments(input_file):
         free_faculty_list = [f for f in group[group["Status"] == "Free"]["Faculty Name"].unique().tolist() if f not in EXCLUDE_FACULTY]
         free_faculty_list = [f for f in free_faculty_list if is_available_before_after(f, day, slot)]
 
-        if not free_faculty_list:
+        if not free_faculty_list or busy_classes.empty:
             peer_assignments.append({
                 "Day": day,
                 "Time Slot": slot,
@@ -159,6 +160,7 @@ def generate_summary_from_excel(input_file):
     summary = summary[["Day", "Time Slot", "Faculty Name", "Designation", "Emp ID", "Status", "Assigned Work"]]
     return summary
 
+
 # -----------------------------------
 # Streamlit Dashboard
 # -----------------------------------
@@ -169,23 +171,24 @@ def main():
     st.title("Department of EECE - Faculty Peer Assignment Dashboard")
 
     excel_file = "Peercopy.xlsx"
+    cache_file = "peer_assignments.csv"
 
     # ---------------------------
-    # Store assignments in session state
+    # Load existing assignments if available
     # ---------------------------
-    if "peer_df" not in st.session_state:
-        st.session_state.peer_df = generate_peer_assignments(excel_file)
-    if "summary" not in st.session_state:
-        st.session_state.summary = generate_summary_from_excel(excel_file)
+    if os.path.exists(cache_file):
+        peer_df = pd.read_csv(cache_file)
+    else:
+        peer_df = generate_peer_assignments(excel_file)
+        peer_df.to_csv(cache_file, index=False)
+
+    summary = generate_summary_from_excel(excel_file)
 
     # Button to regenerate assignments
     if st.button("🔄 Regenerate Peer Assignments"):
-        st.session_state.peer_df = generate_peer_assignments(excel_file)
-        st.session_state.summary = generate_summary_from_excel(excel_file)
-        st.success("Peer assignments regenerated!")
-
-    peer_df = st.session_state.peer_df
-    summary = st.session_state.summary
+        peer_df = generate_peer_assignments(excel_file)
+        peer_df.to_csv(cache_file, index=False)
+        st.success("Peer assignments regenerated and saved!")
 
     # Sidebar filters
     st.sidebar.header("Filters")
@@ -239,8 +242,10 @@ def main():
         peer_summary = peer_df.groupby(["Peer Faculty", "Day"])["Class"].apply(list).reset_index()
         peer_summary["Class"] = peer_summary["Class"].apply(lambda x: ", ".join(x))
 
+        # Pivot to get a table where columns are days
         peer_summary_pivot = peer_summary.pivot(index="Peer Faculty", columns="Day", values="Class").fillna("No Assignment")
         st.dataframe(peer_summary_pivot)
+
 
 if __name__ == "__main__":
     main()
