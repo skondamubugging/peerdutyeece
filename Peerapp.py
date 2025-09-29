@@ -3,6 +3,7 @@ import random
 import streamlit as st
 import logging
 import os
+from io import BytesIO
 from PIL import Image
 
 # Suppress Streamlit warnings
@@ -183,6 +184,20 @@ def main():
         peer_df.to_csv(cache_file, index=False)
 
     summary = generate_summary_from_excel(excel_file)
+
+    st.subheader("📥 Download Peer Assignments")
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+        peer_df.to_excel(writer, sheet_name="Peer Assignments", index=False)
+        summary.to_excel(writer, sheet_name="Free Slots", index=False)
+
+    st.download_button(
+        label="⬇️ Download Excel File",
+        data=output.getvalue(),
+        file_name="PeerAssignments.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
     # Button to regenerate assignments
     if st.button("🔄 Regenerate Peer Assignments"):
