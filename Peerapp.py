@@ -3,8 +3,8 @@ import random
 import streamlit as st
 import logging
 import os
-from io import BytesIO
 from PIL import Image
+from io import BytesIO
 
 # Suppress Streamlit warnings
 logging.getLogger("streamlit").setLevel(logging.ERROR)
@@ -185,20 +185,6 @@ def main():
 
     summary = generate_summary_from_excel(excel_file)
 
-    st.subheader("📥 Download Peer Assignments")
-
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-        peer_df.to_excel(writer, sheet_name="Peer Assignments", index=False)
-        summary.to_excel(writer, sheet_name="Free Slots", index=False)
-
-    st.download_button(
-        label="⬇️ Download Excel File",
-        data=output.getvalue(),
-        file_name="PeerAssignments.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-
     # Button to regenerate assignments
     if st.button("🔄 Regenerate Peer Assignments"):
         peer_df = generate_peer_assignments(excel_file)
@@ -257,9 +243,25 @@ def main():
         peer_summary = peer_df.groupby(["Peer Faculty", "Day"])["Class"].apply(list).reset_index()
         peer_summary["Class"] = peer_summary["Class"].apply(lambda x: ", ".join(x))
 
-        # Pivot to get a table where columns are days
         peer_summary_pivot = peer_summary.pivot(index="Peer Faculty", columns="Day", values="Class").fillna("No Assignment")
         st.dataframe(peer_summary_pivot)
+
+    # -----------------------------------
+    # Download Peer Assignments as Excel
+    # -----------------------------------
+    st.subheader("📥 Download Peer Assignments")
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        peer_df.to_excel(writer, sheet_name="Peer Assignments", index=False)
+        summary.to_excel(writer, sheet_name="Free Slots", index=False)
+
+    st.download_button(
+        label="⬇️ Download Excel File",
+        data=output.getvalue(),
+        file_name="PeerAssignments.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 
 if __name__ == "__main__":
