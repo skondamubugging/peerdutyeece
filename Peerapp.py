@@ -169,8 +169,23 @@ def main():
     st.title("Department of EECE - Faculty Peer Assignment Dashboard")
 
     excel_file = "Peercopy.xlsx"
-    peer_df = generate_peer_assignments(excel_file)
-    summary = generate_summary_from_excel(excel_file)
+
+    # ---------------------------
+    # Store assignments in session state
+    # ---------------------------
+    if "peer_df" not in st.session_state:
+        st.session_state.peer_df = generate_peer_assignments(excel_file)
+    if "summary" not in st.session_state:
+        st.session_state.summary = generate_summary_from_excel(excel_file)
+
+    # Button to regenerate assignments
+    if st.button("🔄 Regenerate Peer Assignments"):
+        st.session_state.peer_df = generate_peer_assignments(excel_file)
+        st.session_state.summary = generate_summary_from_excel(excel_file)
+        st.success("Peer assignments regenerated!")
+
+    peer_df = st.session_state.peer_df
+    summary = st.session_state.summary
 
     # Sidebar filters
     st.sidebar.header("Filters")
@@ -224,10 +239,8 @@ def main():
         peer_summary = peer_df.groupby(["Peer Faculty", "Day"])["Class"].apply(list).reset_index()
         peer_summary["Class"] = peer_summary["Class"].apply(lambda x: ", ".join(x))
 
-        # Pivot to get a table where columns are days
         peer_summary_pivot = peer_summary.pivot(index="Peer Faculty", columns="Day", values="Class").fillna("No Assignment")
         st.dataframe(peer_summary_pivot)
-
 
 if __name__ == "__main__":
     main()
