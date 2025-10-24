@@ -84,6 +84,8 @@ def generate_peer_assignments(input_file):
             "Dr M Ramu",
             "Dr. M Ramesh",
             "Dr V Raja Kumar"
+            "Dr. M N V L M Krishna Munagala"
+            "Dr. T. Sandhya"
         ]
 
         free_faculty_list = [f for f in group[group["Status"] == "Free"]["Faculty Name"].unique().tolist() if f not in EXCLUDE_FACULTY]
